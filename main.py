@@ -1,11 +1,14 @@
 import logging
+import re
+
 from linkedin_jobs_scraper import LinkedinScraper
 from linkedin_jobs_scraper.events import Events, EventData
 from linkedin_jobs_scraper.query import Query, QueryOptions, QueryFilters
 from linkedin_jobs_scraper.filters import RelevanceFilters, TimeFilters, TypeFilters, ExperienceLevelFilters
 
+# You first to install linkedin-jobs-scraper package, run pip install linkedin-jobs-scraper
+#blog post at https://tariq101.netlify.app/
 
-import re
 
 
 # Prints out event data to the console
@@ -17,9 +20,11 @@ def printout(data,case):
     print(data.apply_link)
     print(data.description)
     print('-------------------------------------------------------')
+    
 
-def uniqueMatches(array):
-    return bool(len(array))
+#returns the number of distinct matches for a given regex expresion 
+def distinctMatches(array):
+    return set(len(array))
 
 def on_data(data: EventData):
     txt = data.description
@@ -35,7 +40,7 @@ def on_data(data: EventData):
     #This matches for years of experience, see https://regex101.com/r/KwngR1/2
     years = re.compile(r"(\d+(?:-\d+)?\+?)\s*(or more|to)?(years?)", re.I).findall(txt)
 
-    #Match only for 1-2 year of experience 
+    #Matches only for 3-9 year of experience 
     entrylevel = re.compile(r"([3-9](?:-[3-9])?\+?)\s*(or more|to)?(years?)", re.I).findall(txt)
 
     #special regex 
@@ -46,15 +51,15 @@ def on_data(data: EventData):
 
     #This if-else is block is a bottle neck for performance. It's better to cache the results from UniqueMatches than to re-compute 
     #it everytime. I don't care about performance, so it doesn't matter to me. 
-    if uniqueMatches(amazon) >= 1 and uniqueMatches(tools) >= 1  and  uniqueMatches(language) >= 1 and uniqueMatches(location) > 0 and not uniqueMatches(years):
+    if distinctMatches(amazon) >= 1 and distinctMatches(tools) >= 1  and  distinctMatches(language) >= 1 and distinctMatches(location) > 0 and not distinctMatches(years):
          printout(data, "perfect case")
-    elif uniqueMatches(amazon) >= 1 and uniqueMatches(tools) >= 1  and uniqueMatches(language) >= 1 and uniqueMatches(location) >= 0 and not uniqueMatches(years):
+    elif distinctMatches(amazon) >= 1 and distinctMatches(tools) >= 1  and distinctMatches(language) >= 1 and distinctMatches(location) >= 0 and not distinctMatches(years):
          printout(data, "Good case")
          #parse for 'graduate/graduated' token in the advert 
-    elif uniqueMatches(amazon) >= 1 and uniqueMatches(tools) >= 1  and uniqueMatches(language) >= 1 and uniqueMatches(location) >= 0 and uniqueMatches(graduate):
+    elif distinctMatches(amazon) >= 1 and distinctMatches(tools) >= 1  and distinctMatches(language) >= 1 and distinctMatches(location) >= 0 and distinctMatches(graduate):
         #Special case for university graduate jobs 
          printout(data, "graduate")
-    elif uniqueMatches(amazon) >= 1 and uniqueMatches(tools) >= 1  and uniqueMatches(language) >= 1 and uniqueMatches(location) >= 0 and not uniqueMatches(entrylevel):
+    elif distinctMatches(amazon) >= 1 and distinctMatches(tools) >= 1  and distinctMatches(language) >= 1 and distinctMatches(location) >= 0 and not distinctMatches(entrylevel):
          printout(data,"entrylevel")
 
 
@@ -78,7 +83,7 @@ scraper.on(Events.DATA, on_data)
 scraper.on(Events.ERROR, on_error)
 scraper.on(Events.END, on_end)
 
-limit = 1500
+limit = 20
 queries = [
     Query(
         query='Cloud Engineer',
