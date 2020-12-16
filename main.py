@@ -53,16 +53,12 @@ def on_data(data: EventData):
     # Why does this look like a code smell?
     amazon = distinctMatches(re.compile(r'\b(amazon|aws)\b', flags=re.I).findall(data.description))
     tools = distinctMatches(re.compile(r'\b(terraform|docker|linux|ansible)\b', flags=re.I).findall(data.description))
-    language = distinctMatches(
-        re.compile(r'\b(node(js)?|Typescript|javascript|python|bash)\b', flags=re.I).findall(data.description))
-    location = distinctMatches(
-        re.compile(r'\b(Canada|sponser|remote|graduated?)\b', flags=re.I).findall(data.description))
-    # This matches for years of experience, see https://regex101.com/r/KwngR1/2
-    years = distinctMatches(
-        re.compile(r"(\d+(?:-\d+)?\+?)\s*(or more|to)?(years?)", flags=re.I).findall(data.description))
+    language = distinctMatches( re.compile(r'\b(node(js)?|Typescript|javascript|python|bash)\b', flags=re.I).findall(data.description))
+    location = distinctMatches( re.compile(r'\b(Canada|sponser|remote|graduated?)\b', flags=re.I).findall(data.description))
+    # This matches for yearsOfexperience of experience, see https://regex101.com/r/KwngR1/2
+    yearsOfexperience = distinctMatches( re.compile(r"(\d+(?:-\d+)?\+?)\s*(or more|to)?(yearsOfexperience?)", flags=re.I).findall(data.description))
     # Matches only for 3-9 year of experience
-    entrylevel = distinctMatches(
-        re.compile(r"([3-9](?:-[3-9])?\+?)\s*(or more|to)?(years?)", flags=re.I).findall(data.description))
+    entryLevelYears = distinctMatches( re.compile(r"([3-9](?:-[3-9])?\+?)\s*(or more|to)?(yearsOfexperience?)", flags=re.I).findall(data.description))
     # special regex
     graduate = distinctMatches(re.compile(r"graduated?", flags=re.I).findall(data.description))
 
@@ -73,16 +69,16 @@ def on_data(data: EventData):
     #Exclude postings containing irrelevant keywords
     if re.compile(r"\b(C|Ruby|PHP)\b", flags=re.I).findall(data.description): return
 
-    if   (amazon) >= 1 and (tools) >= 3 and (language) >= 1 and (location) > 0 and not bool(years):
-        printout(data, "perfect case")
-    elif (amazon) >= 1 and (tools) >= 2 and (language) >= 1 and (location) >= 0 and not bool(years):
-        printout(data, "Good case")
+    if   (amazon) >= 1 and (tools) >= 3 and (language) >= 1 and (location) > 0 and not bool(yearsOfexperience):
+        printout(data, "Perfect case")
+    elif (amazon) >= 1 and (tools) >= 2 and (language) >= 1 and (location) >= 0 and not bool(yearsOfexperience):
+        printout(data, "Best case")
         # parse for 'graduate/graduated' token in the advert
     elif (amazon) >= 1 and (tools) >= 1 and (language) >= 1 and (location) >= 0 and bool(graduate):
         # Special case for university graduate jobs
         printout(data, "graduate")
-    elif (amazon) >= 1 and (tools) >= 1 and (language) >= 1 and (location) >= 0 and not bool(entrylevel):
-        printout(data, "entrylevel")
+    elif (amazon) >= 1 and (tools) >= 1 and (language) >= 1 and (location) >= 0 and not bool(entryLevelYears):
+        printout(data, "Jobs with 1-3 years, mediocore jobs at best")
 
 
 def on_error(error):
