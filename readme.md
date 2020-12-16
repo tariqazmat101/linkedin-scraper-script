@@ -1,4 +1,4 @@
-##Example script to scrape linkedin job postings
+Example script to scrape linkedin job postings
 For more context about this script, you can check out my [post](https://tariq101.netlify.app/scraping-linkedin/)
 
 You will first need to install linkedin-jobs-scraper:
