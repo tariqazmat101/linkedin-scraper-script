@@ -1,6 +1,7 @@
 Update:
 As of 3/10/21,
 The script has been deprecated. Linkedin's API is severely throttling the number of responses. 
+
 Example script to scrape linkedin job postings
 For more context about this script, you can check out my [post](https://tariq101.netlify.app/scraping-linkedin/)
 
